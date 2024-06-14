@@ -28,23 +28,14 @@
 
        
 
-<form method="POST" action="">
-    <select name="sort" value="<?php if (isset($_SESSION['sort'])) {$_SESSION['sort'];} else {"test";}?>">
-        <option value="id">Id</option>
-        <option value="login">Login</option>
-        <option value="name">Name</option>
-        <option value="lastname">Lastname</option>
-        <option value="sex">Sex</option>
-        <option value="dob">Age</option>
-    </select>
-    <input type="submit" value="Click"/>
-</form>
 
 
 <?php
 $kol = 3;  //количество записей для вывода
 
 if (!empty($_SESSION['admin'])) {
+ 
+    $cat_user = array_keys(OutputUsers($link, $tbName, "id", 1, 1)[1]);
 
     if (isset($_GET['page']) && is_numeric($_GET['page']) || !isset($_GET['page']))
     {
@@ -68,15 +59,62 @@ if (!empty($_SESSION['admin'])) {
         $sort = $_SESSION['sort'];
 	    $users = OutputUsers($link, $tbName, $sort, $art, $kol);
         $str_pag = $users[0];
-        unset($users[0]);
-        $myJSON = json_encode($users);
+        array_shift($users);
+        ?>
+        <form method="POST" action="">
+            <select name="sort">
+                <?php
+                foreach ($cat_user as $cat)
+                {
+                    $selected = null;
+                    if (isset($sort) && $sort=="$cat") 
+                    {
+                        $selected = "selected";
+                    }
+                    print("<option value='". $cat . "' " . $selected . ">". $cat . "</option>");
+                }
+                ?>
+            </select>
+            <input type="submit" value="Click"/>
+        </form>
+        <form method="POST" action="?page=new_user">
+            <input type="submit" value="New User"/>
+        </form>
+        <?php
         foreach ($users as $user)
         {
-            print("<button class='openModal' id='" . $user['login'] . "'>Идентификатор: " . $user['id'] . "Имя: " . $user['login'] . "Имя: " . $user['name']. "Имя: " . $user['lastname']. "Имя: " . $user['sex']. "Имя: " . $user['dob'] . "</button><br>");
+            print("<button class='openModal' id='" . $user['login'] . "' name='". $user['id'] . "'>Идентификатор: " . $user['id'] . "Имя: " . $user['login'] . "Имя: " . $user['name']. "Имя: " . $user['lastname']. "Имя: " . $user['sex']. "Имя: " . $user['dob'] . "</button><br>");
     	}
         for ($i = 1; $i <= $str_pag; $i++){
             echo "<a href=index.php?page=".$i."> Страница ".$i." </a>";
         }
+    }
+    else if ($_GET['page'] == "new_user")
+    {
+        ?>
+        <form action="" method="post">
+        <?php
+        array_shift($cat_user);
+        foreach ($cat_user as $cat)
+        {
+            $input = ">";
+            if ($cat == "sex")
+            {
+                $input = 'type="radio" value="1">Man</input><input name="sex" type="radio" value="0">Woman</input>';
+            }
+            else if ($cat == "dob")
+            {
+                $input = 'type="date">';
+            }
+            print($cat . ": <input name='". $cat . "'" . $input ."<br>");
+        }
+        print("<input type='submit' value='Submit'/>");
+        if (array_keys($_POST) == $cat_user)
+        {
+            InsertUser($link, $tbName, $_POST['login'], $_POST['password'], $_POST['name'], $_POST['lastname'], $_POST['sex'], $_POST['dob']);
+            print($_POST['sex']);
+        }
+        ?></form><?php
     }
     else
     {?>
@@ -84,7 +122,8 @@ if (!empty($_SESSION['admin'])) {
             <div class="modal-content">
                 <button class="close">close</button>
                 <p id="demo"><?php
-                $user = FindUserByLogin ($link, $tbName, $_GET['page'])[0];
+                $userLogin = preg_replace('/\d/','', $_GET['page']); 
+                $user = FindUserByLogin ($link, $tbName, $userLogin)[0];
                 print("Идентификатор: " . $user['id'] . "Имя: " . $user['login'] . "Имя: " . $user['name']. "Имя: " . $user['lastname']. "Имя: " . $user['sex']. "Имя: " . $user['dob'] . "<br>");
                 ?>
                 </p>

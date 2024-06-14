@@ -7,7 +7,8 @@ const divbtn = function (elem) {
     return function() 
     {
         userLogin = elem.id;
-        document.location.href= "?page=" + userLogin;
+        userId = elem.name;
+        document.location.href= "?page=" + userLogin + userId;
     }
 };
 

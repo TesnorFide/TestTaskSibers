@@ -30,7 +30,7 @@ function InsertUser($link, $tbName, $login, $password, $name = null, $lastname =
     }
 }
 
-function OutputUsers ($link, $tbName, $sort, $art = null, $kol = null)
+function OutputUsers ($link, $tbName, $sort, $art, $kol)
 {
     $sql = "SELECT * FROM $tbName ORDER BY $sort LIMIT $art,$kol";
     $result = mysqli_query($link, $sql);
