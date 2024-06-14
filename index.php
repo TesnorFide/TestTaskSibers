@@ -2,14 +2,7 @@
             session_start();
 
             include 'func.php';
-            $tbName = "userSibers";
-            $link = DbConnect("localhost", "u2239489_test", "qwerty12345", "u2239489_test");
-
-
-
-            //InsertUser($link, $tbName, "TestUser" . strval(rand(0,1000)), "qwerty21", "John", "Cena", true, "2002.10.11");
-
-
+            include 'bdconnect.php';
 
         ?>
 
@@ -83,7 +76,7 @@ if (!empty($_SESSION['admin'])) {
         <?php
         foreach ($users as $user)
         {
-            print("<button class='openModal' id='" . $user['login'] . "' name='". $user['id'] . "'>Идентификатор: " . $user['id'] . "Имя: " . $user['login'] . "Имя: " . $user['name']. "Имя: " . $user['lastname']. "Имя: " . $user['sex']. "Имя: " . $user['dob'] . "</button><br>");
+            print("<button class='openModal' id='" . $user['login'] . "' name='". $user['id'] . "'>Идентификатор: " . $user['id'] . "Имя: " . $user['login'] . "Имя: " . $user['name']. "Имя: " . $user['lastname']. "Имя: " . $user['sex']. "Имя: " . $user['dob'] . "</button><form method='POST' action='./deluser.php?id=" . $user['id'] . "'><input type='submit' value='X'/></form><br>");
     	}
         for ($i = 1; $i <= $str_pag; $i++){
             echo "<a href=index.php?page=".$i."> Страница ".$i." </a>";

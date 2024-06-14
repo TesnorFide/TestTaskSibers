@@ -58,3 +58,11 @@ function FindUserByLogin ($link, $tbName, $login)
 
     return ($rows);
 }
+
+function DeleteUser ($link, $tbName, $id)
+{
+    $sql = "DELETE FROM $tbName WHERE id='$id'";
+    $result = mysqli_query($link, $sql);
+
+    return ($result);
+}
