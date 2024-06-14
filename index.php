@@ -105,23 +105,68 @@ if (!empty($_SESSION['admin'])) {
         if (array_keys($_POST) == $cat_user)
         {
             InsertUser($link, $tbName, $_POST['login'], $_POST['password'], $_POST['name'], $_POST['lastname'], $_POST['sex'], $_POST['dob']);
-            print($_POST['sex']);
         }
         ?></form><?php
     }
     else
     {?>
-    <div id="modal" class="modal">
-            <div class="modal-content">
-                <button class="close">close</button>
-                <p id="demo"><?php
-                $userLogin = preg_replace('/\d/','', $_GET['page']); 
-                $user = FindUserByLogin ($link, $tbName, $userLogin)[0];
-                print("Идентификатор: " . $user['id'] . "Имя: " . $user['login'] . "Имя: " . $user['name']. "Имя: " . $user['lastname']. "Имя: " . $user['sex']. "Имя: " . $user['dob'] . "<br>");
-                ?>
-                </p>
-            </div>
-        </div><?php
+    
+        <form action="" method="post">
+        <?php
+        $userLogin = preg_replace('/\d/','', $_GET['page']); 
+        $user = FindUserByLogin ($link, $tbName, $userLogin)[0];
+        array_shift($user);
+        array_shift($cat_user);
+        for ($i = 0; $i <= count($user)-1; $i++)
+        {
+            $cat = $cat_user[$i];
+            $param = $user[$cat];
+            $input = ">";
+            if ($cat == "sex")
+            {
+                if ($param == 1)
+                {
+                    $man = "checked='checked'";
+                    $woman = null;
+                }
+                else
+                {
+                    $man = null;
+                    $woman = "checked='checked'";
+                }
+                $input = 'type="radio" value="1"' . $man . '>Man</input><input name="sex" type="radio" value="0"' . $woman . '>Woman</input>';
+                $param = 1;
+            }
+            else if ($cat == "dob")
+            {
+                $input = 'type="date">';
+            }
+            print($cat . ": <input value='" . $param . "' name='". $cat . "'" . $input ."<br>");
+        }
+        print("<input type='submit' value='Submit'/>");
+        if (array_keys($_POST) == $cat_user)
+        {
+            $login = $_POST['login'];
+            $new_user = $_POST;
+            $new_cat = $cat_user;
+            for ($i = 0; $i <= count($user)-1; $i++)
+            {
+                $cat = $cat_user[$i];
+                if ($new_user[$cat] == $user[$cat])
+                {
+                    unset($new_user[$cat]);
+                    unset($new_cat[$i]);
+                }
+            }
+            if (!empty($new_user))
+            {
+                $new_cat = array_values($new_cat);
+                EditUser($link, $tbName,  $login, $new_user, $new_cat);
+                print_r($new_user);
+                print_r($new_cat);
+            }
+        }
+        ?></form><?php
     }
 }
 

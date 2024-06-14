@@ -66,3 +66,33 @@ function DeleteUser ($link, $tbName, $id)
 
     return ($result);
 }
+
+function EditUser($link, $tbName, $login, array $new_user, array $categories)
+{
+    $str = "";
+    $com[0] = "";
+    if (count($new_user)>1)
+    {
+        for ($i = 0; $i <= count($new_user)-2; $i++)
+        {
+            $com[$i] = ",";
+        }
+        $com[count($new_user)-1] = '';
+    }
+    for ($i = 0; $i <= count($new_user)-1; $i++)
+    {
+        $cat = $categories[$i];
+        $str .=  "$cat = '$new_user[$cat]'$com[$i] ";
+    }
+    $sql = "UPDATE $tbName SET " . $str . " WHERE login = '" . $login . "'";
+    print($sql);
+
+    $result = mysqli_query($link, $sql);
+
+    if ($result == false) {
+        print("Произошла ошибка при выполнении запроса");
+    }
+    else {
+        print("Данные успешно обновлены");
+    }
+}
