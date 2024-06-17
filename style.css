@@ -1,19 +1,33 @@
-.modal {
-    /*display: none;*/
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(255 255 255)
-  }
-  
-  .modal-content {
-    /* some rules */
-  }
-  
-  .close {
-    /* some rules */
-  }
+body {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 95vh;
+  justify-content: space-between;
+}
+
+.headbar {
+  display: flex;
+  width: 95vw;
+  justify-content: space-between;
+}
+
+.user {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-bottom: 1em;
+  margin-top: 1em
+}
+
+.page {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.authdata{
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  width: 95vw;
+}

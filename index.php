@@ -1,10 +1,11 @@
 <?php
-            session_start();
 
-            include 'func.php';
-            include 'bdconnect.php';
+    session_start();
 
-        ?>
+    include 'func.php'; // Connecting MySQL function file
+    include 'bdconnect.php'; // Connecting auth database file
+
+?>
 
 <!DOCTYPE html>
 <html>
@@ -14,50 +15,53 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        
-
-     
-
-
-       
-
 
 
 <?php
-$kol = 3;  //количество записей для вывода
+if (isset($_POST['kol']))
+{
+    $kol = $_POST['kol'];
+}
+else 
+{
+    $kol = 5;  // Number of records to output
+}
 
 if (!empty($_SESSION['admin'])) {
  
-    $cat_user = array_keys(OutputUsers($link, $tbName, "id", 1, 1)[1]);
+    $cat_user = array_keys(OutputUsers($link, $tbName, "id", 1, 1)[2]); // Get database fields
 
-    if (isset($_GET['page']) && is_numeric($_GET['page']) || !isset($_GET['page']))
+    if (isset($_GET['page']) && is_numeric($_GET['page']) || !isset($_GET['page'])) // If page is numeric & exist or not exist
     {
-        if (!isset($_GET['page']))
+        if (!isset($_GET['page'])) // Set page, if not exist
         {
             $page = 1;
         }
-        if (!isset($page))
+        if (!isset($page)) // Set variable page if not exist
         {
             $page = $_GET['page'];
         }
-        $art = ($page * $kol) - $kol; // определяем, с какой записи нам выводить
-        if(!empty($_POST['sort']))
+        $art = ($page * $kol) - $kol; // Determine from which record we should output
+        if(!empty($_POST['sort'])) // Set post sort if not exist
         {
             $_SESSION['sort'] = $_POST['sort'];
         }
-        if(empty($_SESSION['sort']))
+        if(empty($_SESSION['sort'])) // Set session sort if not exist
         {
             $_SESSION['sort'] = "id";
         }
-        $sort = $_SESSION['sort'];
-	    $users = OutputUsers($link, $tbName, $sort, $art, $kol);
-        $str_pag = $users[0];
-        array_shift($users);
+        $sort = $_SESSION['sort']; // Set variable sort if not exist
+	    $users = OutputUsers($link, $tbName, $sort, $art, $kol); // Get users by number
+        $total_users = $users[0];
+        array_shift($users); // Delete page from users
+        $str_pag = $users[0]; // Get page
+        array_shift($users); // Delete page from users
         ?>
+        <div class="headbar">
         <form method="POST" action="">
             <select name="sort">
                 <?php
-                foreach ($cat_user as $cat)
+                foreach ($cat_user as $cat) // Display the list of sort method page by page
                 {
                     $selected = null;
                     if (isset($sort) && $sort=="$cat") 
@@ -73,16 +77,26 @@ if (!empty($_SESSION['admin'])) {
         <form method="POST" action="?page=new_user">
             <input type="submit" value="New User"/>
         </form>
+        </div>
+        <div class="main">
         <?php
-        foreach ($users as $user)
+        foreach ($users as $user) // Display the list of users page by page
         {
-            print("<button class='openModal' id='" . $user['login'] . "' name='". $user['id'] . "'>Идентификатор: " . $user['id'] . "Имя: " . $user['login'] . "Имя: " . $user['name']. "Имя: " . $user['lastname']. "Имя: " . $user['sex']. "Имя: " . $user['dob'] . "</button><form method='POST' action='./deluser.php?id=" . $user['id'] . "'><input type='submit' value='X'/></form><br>");
-    	}
-        for ($i = 1; $i <= $str_pag; $i++){
+            print("<div class='user'><form method='POST' action='./index.php?page=" . $user['login'] . $user['id'] . "'><input type='submit' id='" . $user['login'] . "' name='". $user['id'] . "' value='Идентификатор: " . $user['id'] . " Логин: " . $user['login'] . " Имя: " . $user['name']. " Фамилия: " . $user['lastname']. " Пол: " . $user['sex']. " Дата рождения: " . $user['dob'] . "'/></form></form><form method='POST' action='./deluser.php?id=" . $user['id'] . "'><input type='submit' value='X'/></form></div>");
+    	}?>
+        <div class="page">
+        <?php
+        for ($i = 1; $i <= $str_pag; $i++){ // Display the list of number page by page
             echo "<a href=index.php?page=".$i."> Страница ".$i." </a>";
-        }
+        }?>
+        <form action="" method="post">
+        <?php
+        print("<input name='kol' type='number' min=1 max='". $total_users ."' step=1 value='". $kol ."'><input type='submit'>");
+        ?>
+        </form></div></div>
+        <?php
     }
-    else if ($_GET['page'] == "new_user")
+    else if ($_GET['page'] == "new_user") // Creation new user
     {
         ?>
         <form action="" method="post">
@@ -108,7 +122,7 @@ if (!empty($_SESSION['admin'])) {
         }
         ?></form><?php
     }
-    else
+    else // User page
     {?>
     
         <form action="" method="post">
@@ -169,21 +183,22 @@ if (!empty($_SESSION['admin'])) {
         ?></form><?php
     }
 }
-
-
-     
 ?>
 
-
-
-<?php if (!empty($_SESSION['auth'])): ?>
-    <!--Авторизованный-->
+<?php if (empty($_SESSION['auth'])): ?>
+    <form method='POST' action='./login.php'><input type="submit" value="Авторизоваться"/></form> 
 <?php endif; ?>
+
+<div class="authdata">
+<?php if (!empty($_SESSION['auth']))
+    {
+        print("<br>Вы авторизованы как " . $_SESSION['auth'] . "<form method='POST' action='./login.php'><input type='submit' value='Выйти'/></form> ");
+    }
+?>
+</div>
 
 <?php if (!empty($_SESSION['admin'])): ?>
    <!--Админ-->
 <?php endif; ?>
 
 <!--Anyone-->
-
-<script src="script.js"></script>

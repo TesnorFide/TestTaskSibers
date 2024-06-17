@@ -1,6 +1,6 @@
 <?php
 
-function DbConnect($server_adress, $user_name, $password, $dbname)
+function DbConnect($server_adress, $user_name, $password, $dbname) // Connect to database
 {
     $link = mysqli_connect($server_adress, $user_name, $password, $dbname);
 
@@ -16,7 +16,7 @@ function DbConnect($server_adress, $user_name, $password, $dbname)
     return ($link);
 }
 
-function InsertUser($link, $tbName, $login, $password, $name = null, $lastname = null, bool $sex = null, $dob = null)
+function InsertUser($link, $tbName, $login, $password, $name = null, $lastname = null, bool $sex = null, $dob = null) // Add new uset to database
 {
     $sql = "INSERT INTO $tbName (login, password, name, lastname, sex, dob) VALUES ('$login', '$password', '$name', '$lastname', '$sex', '$dob')";
 
@@ -30,7 +30,7 @@ function InsertUser($link, $tbName, $login, $password, $name = null, $lastname =
     }
 }
 
-function OutputUsers ($link, $tbName, $sort, $art, $kol)
+function OutputUsers ($link, $tbName, $sort, $art, $kol) // Get users
 {
     $sql = "SELECT * FROM $tbName ORDER BY $sort LIMIT $art,$kol";
     $result = mysqli_query($link, $sql);
@@ -39,17 +39,14 @@ function OutputUsers ($link, $tbName, $sort, $art, $kol)
     
     $res = mysqli_query($link, "SELECT COUNT(*) FROM $tbName");
     $row = mysqli_fetch_row($res);
-    $total = $row[0]; // всего записей
+    $total = $row[0];
     $str_pag = ceil($total / $kol);
     array_unshift($rows, $str_pag);
+    array_unshift($rows, $total);
     return ($rows);
-
-    /*foreach ($rows as $row) {
-        print("Город: " . $row['name'] . "; Идентификатор: . " . $row['id'] . "<br>");
-    }*/
 }
 
-function FindUserByLogin ($link, $tbName, $login)
+function FindUserByLogin ($link, $tbName, $login) // Find user by login in database
 {
     $sql = "SELECT * FROM $tbName WHERE login = '$login'";
     $result = mysqli_query($link, $sql);
@@ -59,7 +56,7 @@ function FindUserByLogin ($link, $tbName, $login)
     return ($rows);
 }
 
-function DeleteUser ($link, $tbName, $id)
+function DeleteUser ($link, $tbName, $id) // Delete user by id in database
 {
     $sql = "DELETE FROM $tbName WHERE id='$id'";
     $result = mysqli_query($link, $sql);
@@ -67,7 +64,7 @@ function DeleteUser ($link, $tbName, $id)
     return ($result);
 }
 
-function EditUser($link, $tbName, $login, array $new_user, array $categories)
+function EditUser($link, $tbName, $login, array $new_user, array $categories) // Edit user in database
 {
     $str = "";
     $com[0] = "";
